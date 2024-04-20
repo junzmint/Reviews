@@ -7,3 +7,5 @@
 - You can't use any Shopee API to get products by category, all of those are forbidden now. I get the products url by simply create a javascript code to get it from console. Foreach category i got about 180 - 200 products url. 
 - Selenium and scrapy still can be used. But you need to make the code more like a human because Shopee has a bot detect system.
 - The "get ratings" from a product url somehow still can be used without permisson.
+# Sample
+At the latest commit, i have crawled about 6094604 samples

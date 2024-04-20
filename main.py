@@ -69,7 +69,8 @@ def main():
     print("Crawl started")
     start_time = datetime.now()
 
-    converted_data = read_json_product_url("./get_product_url/product_url.json")
+    # converted_data = read_json_product_url("./get_product_url/product_url.json")
+    converted_data = read_json_product_url("./get_product_url/product_url_2.json")
     category_list = list(converted_data.keys())
 
     t0 = threading.Thread(target=crawl_category, args=(category_list[0],converted_data[category_list[0]]))
