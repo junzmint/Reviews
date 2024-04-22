@@ -12,18 +12,24 @@ def get_cmt_from_shopee_url(url):
     ratings_url = "https://shopee.vn/api/v2/item/get_ratings?filter=0&flag=1&itemid={item_id}&limit=50&offset={offset}&shopid={shop_id}&type={rating}"
 
     # d = {"username": [], "rating": [], "comment": []}
-    d = {"comment": [], "rating": [], "cmtid": [], "time": []}
+    d = {"itemid" : [], "product_name" : [], "cmtid": [], "author_username" : [], "time": [], "comment": [], "rating": []}
 
     for rate in range(1, 6):
         offset = 0
         while True:
             try:
                 data = requests.get(ratings_url.format(shop_id=shop_id, item_id=item_id, offset=offset, rating = rate)).json()
+                
+                # for key, value in data["data"]["ratings"][0].items():
+                #     print(f"{key}: {value}")
                 i = 1
                 for i, rating in enumerate(data["data"]["ratings"], 1):
                     if(rating["comment"] == ""):
                         continue
                     else:
+                        d["itemid"].append(rating["itemid"])
+                        d["product_name"].append(rating["original_item_info"]["name"])
+                        d["author_username"].append(rating["author_username"])
                         d["rating"].append(rating["rating_star"])
                         d["comment"].append(rating["comment"])
                         d["cmtid"].append(rating["cmtid"])
@@ -53,17 +59,14 @@ def log(key,value):
     print(key + " has " + str(value) + " samples")
 
 def crawl_category(category, url_list):
-    dfs = []
-    for index, url in enumerate(url_list):
-        print(index)
-        dfs.append(pd.DataFrame(get_cmt_from_shopee_url(url)))
-    
-    df = pd.concat(dfs, ignore_index=True)
-
-    df.to_csv(f'./crawl_data/{category}.csv', index=False)
-
-    log(category,df.shape[0])
-
+    # Mở file CSV để ghi
+    with open(f'./crawl_data/{category}.csv', 'a', newline='', encoding='utf-8') as csvfile:
+        for index, url in enumerate(url_list):
+            print(f"Processing {index+1}/{len(url_list)}")
+            data = get_cmt_from_shopee_url(url)  # Giả sử hàm get_cmt_from_shopee_url trả về một list hoặc một đối tượng có thể chuyển đổi thành DataFrame
+            df = pd.DataFrame(data)
+            df.to_csv(csvfile, index=False, header=not index)  # Ghi dữ liệu vào file CSV, không ghi header nếu không phải lần đầu tiên ghi vào file
+            log(category, df.shape[0])  # Ghi log cho mỗi lần ghi dữ liệu vào file
 
 def main():
     print("Crawl started")
